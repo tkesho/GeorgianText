@@ -25,7 +25,11 @@ template <class LCD>
 class GeorgianLCD : public Print {
 public:
   GeorgianLCD(LCD &lcd, uint8_t cols, uint8_t rows) : _lcd(lcd), _cols(cols), _rows(rows) {
-    if ((uint16_t)_cols * _rows > GEORGIAN_LCD_MAX_CELLS) _rows = GEORGIAN_LCD_MAX_CELLS / _cols;
+    if (_cols == 0) _cols = 1;
+    if (_cols > GEORGIAN_LCD_MAX_CELLS) _cols = GEORGIAN_LCD_MAX_CELLS;
+    uint8_t maxRows = (uint8_t)(GEORGIAN_LCD_MAX_CELLS / _cols);
+    if (_rows > maxRows) _rows = maxRows;
+    if (_rows == 0) _rows = 1;
     resetState();
   }
 
