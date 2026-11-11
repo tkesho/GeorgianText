@@ -10,8 +10,8 @@ Boards: **Arduino Uno, Arduino Nano (ATmega328P) and ESP32** — every example c
 All fonts and tables are `PROGMEM` (flash) on AVR; nothing font-related is copied into the Uno's 2 KB RAM.
 
 ## Install
-Copy the `GeorgianLCD` folder into `Documents/Arduino/libraries/` (or *Sketch → Include Library → Add .ZIP Library*).
-Install the display library you need: `LiquidCrystal`, `LiquidCrystal I2C`, `Adafruit GFX Library` + `Adafruit SSD1306` / `Adafruit ST7735 and ST7789 Library`.
+After the library is in the Arduino Library Manager, install **GeorgianLCD** from *Sketch → Include Library → Manage Libraries*. Until then, download the repository ZIP from https://github.com/tkesho/GeorgianLCD (*Code → Download ZIP*) and use *Sketch → Include Library → Add .ZIP Library*.
+`library.properties` lists the display libraries the examples compile against: `LiquidCrystal`, `LiquidCrystal I2C`, `Adafruit GFX Library`, `Adafruit SSD1306`, and `Adafruit ST7735 and ST7789 Library`. The Library Manager installs those with GeorgianLCD. A character-LCD sketch only needs the LCD library you actually wire up; an OLED or TFT sketch needs Adafruit GFX plus that display's library.
 Save your sketches as UTF-8 (the Arduino IDE does this by default).
 
 ## Character LCD (HD44780)

@@ -1,0 +1,53 @@
+#######################################
+# Syntax Coloring Map For GeorgianLCD
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+GeorgianLCD	KEYWORD1
+GeorgianGFX	KEYWORD1
+GeorgianSerialReader	KEYWORD1
+GeoUTF8Decoder	KEYWORD1
+GeoLcdFallback	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+clearRow	KEYWORD2
+printCentered	KEYWORD2
+setWrap	KEYWORD2
+setFallback	KEYWORD2
+slotsInUse	KEYWORD2
+writeCodepoint	KEYWORD2
+setFont	KEYWORD2
+resetDecoder	KEYWORD2
+textWidth	KEYWORD2
+letterIndex	KEYWORD2
+layoutChar	KEYWORD2
+romanize	KEYWORD2
+encodeUTF8	KEYWORD2
+fromLayout	KEYWORD2
+toFontEncoding	KEYWORD2
+utf8Length	KEYWORD2
+poll	KEYWORD2
+overflowed	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+GEO_LETTER_COUNT	LITERAL1
+GEO_FIRST_CP	LITERAL1
+GEO_MTAVRULI_CP	LITERAL1
+GEO_FONT_FIRST	LITERAL1
+GEO_REPLACEMENT	LITERAL1
+GEO_FALLBACK_LAYOUT	LITERAL1
+GEO_FALLBACK_QUESTION	LITERAL1
+GEORGIAN_LCD_MAX_CELLS	LITERAL1
+GEORGIAN_LCD_GLYPHS	LITERAL1
+GeorgianFont6x13	LITERAL1
+GeorgianFont9x18	LITERAL1
