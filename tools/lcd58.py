@@ -1,6 +1,8 @@
-import sys; sys.path.insert(0,'.')
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from bdf import *
-g,a,d=load('/tmp/ucs/6x13.bdf')
+g,a,d=load(Path(__file__).resolve().parent / 'fonts' / '6x13.bdf')
 def cell(cp):
     c=g[cp]; w,h,xo,yo=c['bbx']; B=bits(c)
     cl=[[0]*6 for _ in range(13)]

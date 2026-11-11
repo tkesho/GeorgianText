@@ -1,5 +1,7 @@
 # Final 5x8 HD44780 glyphs, derived from Markus Kuhn's public-domain 6x13 font, hand-tuned.
-import sys; sys.path.insert(0,'.')
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from lcd58 import out
 def P(*rows): return [[1 if ch=='#' else 0 for ch in r] for r in rows]
 fix={

@@ -91,5 +91,6 @@ Host-side unit tests: `extras/hosttest/run.sh`.
 * Pins for parallel LCD and ST7735 per board are in the examples (`#if defined(ARDUINO_ARCH_ESP32)`).
 
 ## Editing glyphs
-`tools/genfonts.py` regenerates `src/GeorgianLCDGlyphs.cpp` and `src/fonts/*.h`; the 5x8 LCD shapes are in
-`tools/lcdfinal.py`. Previews: `extras/lcd_preview.png`, `extras/gfx_6x13_preview.png`, `extras/gfx_9x18_preview.png`.
+`python3 tools/genfonts.py` regenerates `src/GeorgianLCDGlyphs.cpp` and `src/fonts/*.h` from any working directory.
+The 5x8 LCD shapes are hand-tuned in `tools/lcdfinal.py`. GFX bitmaps come from the public-domain Markus Kuhn subsets in `tools/fonts/` (U+0020–U+007E and U+10D0–U+10F0 of ucs-fonts 6x13 and 9x18).
+Previews: `extras/lcd_preview.png`, `extras/gfx_6x13_preview.png`, `extras/gfx_9x18_preview.png`.
