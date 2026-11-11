@@ -12,7 +12,6 @@
 #ifndef pgm_read_byte
   #define pgm_read_byte(addr) (*(const uint8_t *)(addr))
 #endif
-
 #define GEO_LETTER_COUNT 33          // ა (U+10D0) .. ჰ (U+10F0)
 #define GEO_FIRST_CP     0x10D0UL
 #define GEO_MTAVRULI_CP  0x1C90UL    // Mtavruli capitals Ა..Ჰ map onto the same 33 glyphs
@@ -57,13 +56,18 @@ size_t utf8Length(const char *utf8);
 class GeoUTF8Decoder {
 public:
   // Returns true when a full code point is available in cp. Malformed input yields
-  // U+FFFD and resynchronises on the next lead byte.
+  // U+FFFD. A truncated sequence yields U+FFFD and the interrupting byte is decoded
+  // immediately: if this call already returned the replacement, pull the next code
+  // point with pending() before feeding another byte.
   bool feed(uint8_t b, uint32_t &cp);
-  void reset() { _need = 0; }
+  bool pending(uint32_t &cp);
+  void reset() { _need = 0; _pending = false; }
 private:
   uint32_t _cp = 0;
   uint8_t _need = 0;
   uint32_t _min = 0;
+  bool _pending = false;
+  uint32_t _pendingCp = 0;
 };
 
 // Reads lines of UTF-8 text from Serial (or any Stream). Works with the Arduino Serial

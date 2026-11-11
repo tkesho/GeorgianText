@@ -63,10 +63,13 @@ size_t toFontEncoding(const char *utf8, char *out, size_t outSize) {
   GeoUTF8Decoder dec; size_t n = 0; uint32_t cp;
   for (; *utf8 && n + 1 < outSize; utf8++) {
     if (!dec.feed((uint8_t)*utf8, cp)) continue;
-    int8_t idx = letterIndex(cp);
-    if (idx >= 0) out[n++] = (char)(GEO_FONT_FIRST + idx);
-    else if (cp == '\n' || (cp >= 0x20 && cp < 0x7F)) out[n++] = (char)cp;
-    else if (cp != '\r') out[n++] = '?';
+    for (;;) {
+      int8_t idx = letterIndex(cp);
+      if (idx >= 0) out[n++] = (char)(GEO_FONT_FIRST + idx);
+      else if (cp == '\n' || (cp >= 0x20 && cp < 0x7F)) out[n++] = (char)cp;
+      else if (cp != '\r') out[n++] = '?';
+      if (n + 1 >= outSize || !dec.pending(cp)) break;
+    }
   }
   out[n] = 0;
   return n;
@@ -80,6 +83,13 @@ size_t utf8Length(const char *s) {
 
 } // namespace Georgian
 
+bool GeoUTF8Decoder::pending(uint32_t &cp) {
+  if (!_pending) return false;
+  _pending = false;
+  cp = _pendingCp;
+  return true;
+}
+
 bool GeoUTF8Decoder::feed(uint8_t b, uint32_t &cp) {
   if (_need) {
     if ((b & 0xC0) == 0x80) {
@@ -88,7 +98,11 @@ bool GeoUTF8Decoder::feed(uint8_t b, uint32_t &cp) {
       cp = (_cp < _min || _cp > 0x10FFFF || (_cp >= 0xD800 && _cp <= 0xDFFF)) ? GEO_REPLACEMENT : _cp;
       return true;
     }
-    _need = 0;   // truncated sequence: drop it and treat b as a fresh byte
+    _need = 0;   // truncated sequence: emit U+FFFD, then decode b
+    uint32_t next = 0;
+    if (feed(b, next)) { _pending = true; _pendingCp = next; }
+    cp = GEO_REPLACEMENT;
+    return true;
   }
   if (b < 0x80) { cp = b; return true; }
   if ((b & 0xE0) == 0xC0) { _cp = b & 0x1F; _need = 1; _min = 0x80; return false; }
