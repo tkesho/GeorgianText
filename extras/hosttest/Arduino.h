@@ -5,7 +5,9 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <string>
-inline unsigned long millis() { static unsigned long t = 0; return t += 10; }
+inline unsigned long &hostMillisClock() { static unsigned long t = 0; return t; }
+inline unsigned long millis() { return hostMillisClock(); }
+inline void hostSetMillis(unsigned long t) { hostMillisClock() = t; }
 class Print {
 public:
   virtual size_t write(uint8_t) = 0;
