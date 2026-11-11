@@ -53,13 +53,19 @@ public:
   }
 
   // Print a UTF-8 string centred on a row (clears that row first).
+  // Never wraps onto the next row: code points past this row are dropped.
   void printCentered(uint8_t row, const char *utf8) {
     clearRow(row);
     size_t n = Georgian::utf8Length(utf8);
     setCursor(n < _cols ? (uint8_t)((_cols - n) / 2) : 0, row);
+    bool wrap = _wrap;
+    _wrap = false;
     print(utf8);
+    _wrap = wrap;
   }
 
+  // Loaded CGRAM slots (0..8). A slot stays loaded until a later letter reuses it,
+  // even after its previous letter has left the screen.
   uint8_t slotsInUse() const { uint8_t n = 0; for (uint8_t i = 0; i < 8; i++) if (_slot[i] != 0xFF) n++; return n; }
   uint8_t col() const { return _col; }
   uint8_t row() const { return _row; }
@@ -68,7 +74,7 @@ public:
   size_t write(uint8_t b) override {
     uint32_t cp;
     if (!_dec.feed(b, cp)) return 1;
-    writeCodepoint(cp);
+    do writeCodepoint(cp); while (_dec.pending(cp));
     return 1;
   }
   using Print::write;
