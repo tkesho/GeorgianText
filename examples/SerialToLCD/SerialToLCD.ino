@@ -35,14 +35,17 @@ void loop() {
   glcd.setWrap(false);
   glcd.print(text);
 
-  // Second row: romanized text (pure ASCII, no CGRAM needed).
-  lcd.setCursor(0, 1);
+  // Second row: romanized text (pure ASCII, no CGRAM needed). Always go through
+  // glcd so the screen tracker stays in step with the hardware cursor.
+  glcd.setCursor(0, 1);
   GeoUTF8Decoder dec; uint32_t cp; char rom[5]; uint8_t used = 0;
   for (const char *p = text; *p && used < 16; p++) {
     if (!dec.feed((uint8_t)*p, cp)) continue;
-    int8_t idx = Georgian::letterIndex(cp);
-    const char *s = idx >= 0 ? Georgian::romanize(idx, rom) : (rom[0] = (cp < 0x7F ? (char)cp : '?'), rom[1] = 0, rom);
-    for (; *s && used < 16; s++, used++) lcd.write(*s);
+    do {
+      int8_t idx = Georgian::letterIndex(cp);
+      const char *s = idx >= 0 ? Georgian::romanize(idx, rom) : (rom[0] = (cp < 0x7F ? (char)cp : '?'), rom[1] = 0, rom);
+      for (; *s && used < 16; s++, used++) glcd.write((uint8_t)*s);
+    } while (used < 16 && dec.pending(cp));
   }
 
   Serial.print(F("Shown: ")); Serial.print(text);
