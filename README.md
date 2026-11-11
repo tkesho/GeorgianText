@@ -30,8 +30,10 @@ visible it prints a fallback — the Latin keyboard key (`თ`→`T`, default) o
 Latin letters, digits and punctuation come from the LCD ROM and never use slots.
 
 API: `begin() clear() home() setCursor(c,r) print(...) clearRow(r) printCentered(r, s) setWrap(bool) setFallback(f) slotsInUse()`.
+`slotsInUse()` counts loaded CGRAM slots, not letters currently visible — a slot stays occupied until a later letter reuses it.
+`printCentered` stays on its own row (extra characters are dropped instead of wrapping).
 Always print through `glcd` (not `lcd`) so the screen tracking stays correct. RAM: ~100 bytes per instance
-(set `#define GEORGIAN_LCD_MAX_CELLS 32` before the include to save 48 bytes on a 16x2).
+(set `#define GEORGIAN_LCD_MAX_CELLS 32` before the include to save 48 bytes on a 16x2; the 16x2 examples do this).
 
 ## OLED / TFT (Adafruit_GFX)
 ```cpp
@@ -46,8 +48,9 @@ geo.print("გამარჯობა, Hello!");
 display.display();
 ```
 Fonts contain ASCII + all 33 letters (Mtavruli capitals Ა–Ჰ map to the same glyphs), so mixed text works.
-Colour, `setTextSize`, wrapping and cursor come from the display. Helpers: `geo.textWidth(s)`, `geo.printCentered(y, s)`,
-and `Georgian::toFontEncoding()` if you want to call Adafruit_GFX's own `print()`/`getTextBounds()`.
+Colour, `setTextSize`, wrapping and cursor come from the display. Helpers: `geo.textWidth(s)`, `geo.printCentered(y, s, textSize)`
+(applies that size for the draw, then restores the previous size), `geo.resetDecoder()`,
+and `Georgian::toFontEncoding()` if you want to call Adafruit_GFX's own `print()`/`getTextBounds()`. Carriage return is ignored.
 
 | Font | Line height | Flash (bitmaps + glyph table) |
 |---|---|---|
@@ -64,23 +67,23 @@ Works with any Serial Monitor line-ending setting; never splits a multi-byte let
 `Georgian::fromLayout("saqarTvelo", out, n)` converts Georgian-keyboard-layout Latin to UTF-8 (`საქართველო`).
 Other helpers: `Georgian::letterIndex(cp)`, `romanize(idx, buf)` (national system: `შ`→`sh`), `layoutChar(idx)`, `utf8Length(s)`, `GeoUTF8Decoder`.
 
-## Examples and measured size (arduino-cli 1.5.1, AVR core 1.8.8, ESP32 core 3.3.12)
+## Examples and measured size (arduino-cli 1.6.0, AVR core 1.8.8, ESP32 core 3.3.12)
 | Example | Uno / Nano flash | Uno / Nano RAM (static) | ESP32 flash | ESP32 RAM |
 |---|---|---|---|---|
-| HelloLCD_I2C | 5,408 B | 465 B | 286,800 B | 23,644 B |
-| HelloLCD_Parallel | 3,738 B | 291 B | 260,848 B | 22,260 B |
-| SerialToLCD | 7,356 B | 784 B | 297,592 B | 23,836 B |
-| HelloOLED_SSD1306 | 18,570 B | 712 B ¹ | 310,344 B | 23,700 B |
-| SerialToOLED | 17,060 B | 776 B ¹ | 308,760 B | 23,876 B |
-| HelloTFT_ST7735 | 14,854 B | 525 B | 300,500 B | 23,756 B |
-| Utf8SerialEcho | 4,436 B | 276 B | 270,392 B | 22,204 B |
+| HelloLCD_I2C | 5,614 B | 414 B | 286,904 B | 23,604 B |
+| HelloLCD_Parallel | 3,946 B | 232 B | 260,932 B | 22,220 B |
+| SerialToLCD | 7,546 B | 741 B | 297,736 B | 23,796 B |
+| HelloOLED_SSD1306 | 18,824 B | 717 B ¹ | 310,620 B | 23,708 B |
+| SerialToOLED | 17,268 B | 781 B ¹ | 308,864 B | 23,884 B |
+| HelloTFT_ST7735 | 15,120 B | 530 B | 300,736 B | 23,764 B |
+| Utf8SerialEcho | 4,666 B | 276 B | 270,468 B | 22,204 B |
 
 Uno: 32,256 B flash / 2,048 B RAM. Nano: 30,720 B flash (old bootloader) / 2,048 B RAM. ESP32: 1,310,720 B / 327,680 B.
 ¹ Adafruit_SSD1306 additionally `malloc`s a 1,024-byte frame buffer at `begin()` on 128x64 — not in the static figure.
 Most of the ESP32 numbers are the ESP32 core itself (an empty sketch is ~250 KB).
 
 Re-run with `tools/compile_all.sh` (needs `arduino-cli` with `arduino:avr` and `esp32:esp32`).
-Host-side unit tests: `extras/hosttest/test.cpp`.
+Host-side unit tests: `extras/hosttest/run.sh`.
 
 ## Wiring notes
 * I2C LCD/OLED: Uno/Nano SDA=A4, SCL=A5 · ESP32 SDA=21, SCL=22. Common LCD addresses 0x27 / 0x3F, OLED 0x3C.
