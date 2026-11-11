@@ -13,14 +13,14 @@ void setup() {
   lcd.backlight();
   glcd.begin();
 
-  glcd.printCentered(0, "გამარჯობა");   // 6 distinct letters: fits in the 8 CGRAM slots
+  glcd.printCentered(0, "გამარჯობა");   // 7 distinct letters (აბგმორჯ): fits in the 8 CGRAM slots
   glcd.printCentered(1, "Hello 2026");
 }
 
 void loop() {
   delay(3000);
   glcd.clear();                              // frees all 8 slots
-  glcd.print("საქართველო");                 // Georgia
+  glcd.print("თბილისი");                     // Tbilisi: 5 distinct letters (თბილს)
   glcd.setCursor(0, 1);
   glcd.print("slots: ");
   glcd.print(glcd.slotsInUse());

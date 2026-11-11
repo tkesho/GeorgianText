@@ -16,7 +16,7 @@ const char *const words[] = { "მზე", "მთვარე", "ვარს�
 void setup() {
   lcd.begin(16, 2);
   glcd.begin();
-  glcd.print("ქართული LCD");
+  glcd.print("Georgian:");      // ASCII banner: uses no CGRAM slots
 }
 
 void loop() {
