@@ -3,6 +3,7 @@
 // Library: "LiquidCrystal I2C" (Frank de Brabander / Marco Schwartz). Address usually 0x27 or 0x3F.
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
+#define GEORGIAN_LCD_MAX_CELLS 32   // 16x2: 32 cells instead of the 20x4 default (saves 48 B RAM)
 #include <GeorgianLCD.h>
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);

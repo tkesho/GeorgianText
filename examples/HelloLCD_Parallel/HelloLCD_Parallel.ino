@@ -2,6 +2,7 @@
 // Uno/Nano: RS=12 E=11 D4=5 D5=4 D6=3 D7=2.  ESP32: RS=19 E=23 D4=18 D5=17 D6=16 D7=15
 // (5V LCDs on ESP32: the LCD only reads these pins, RW tied to GND, so 3.3V logic is fine).
 #include <LiquidCrystal.h>
+#define GEORGIAN_LCD_MAX_CELLS 32   // 16x2: 32 cells instead of the 20x4 default (saves 48 B RAM)
 #include <GeorgianLCD.h>
 
 #if defined(ARDUINO_ARCH_ESP32)
