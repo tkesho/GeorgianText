@@ -35,17 +35,13 @@ public:
   int16_t textWidth(const char *utf8, uint8_t textSize = 1) const {
     if (!_font) return (int16_t)(Georgian::utf8Length(utf8) * 6 * textSize);
     GeoUTF8Decoder dec; uint32_t cp; int16_t w = 0;
-    uint8_t first = pgm_read_byte(&_font->first), last = pgm_read_byte(&_font->last);
-#if defined(__AVR__)
-    GFXglyph *glyphs = (GFXglyph *)pgm_read_word(&_font->glyph);
-#else
-    GFXglyph *glyphs = _font->glyph;
-#endif
+    uint16_t first = pgm_read_word(&_font->first), last = pgm_read_word(&_font->last);
     for (; *utf8; utf8++) {
       if (!dec.feed((uint8_t)*utf8, cp)) continue;
       uint8_t c = map(cp);
       if (c < first || c > last) continue;
-      w += (int16_t)pgm_read_byte(&glyphs[c - first].xAdvance) * textSize;
+      const GFXglyph *glyph = glyphAt(_font, (uint16_t)(c - first));
+      w += (int16_t)pgm_read_byte(&glyph->xAdvance) * textSize;
     }
     return w;
   }
@@ -66,6 +62,18 @@ public:
   }
 
 private:
+  // Same rule as Adafruit_GFX's pgm_read_glyph_ptr: 16-bit PROGMEM pointers on
+  // AVR, 32-bit pgm_read on ESP8266, direct access where flash is mapped.
+  static const GFXglyph *glyphAt(const GFXfont *font, uint16_t index) {
+#if defined(__AVR__)
+    return &((const GFXglyph *)pgm_read_word(&font->glyph))[index];
+#elif defined(ESP8266)
+    return &((const GFXglyph *)pgm_read_dword(&font->glyph))[index];
+#else
+    return font->glyph + index;
+#endif
+  }
+
   Adafruit_GFX &_gfx;
   const GFXfont *_font = nullptr;
   GeoUTF8Decoder _dec;

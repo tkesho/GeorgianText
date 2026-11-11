@@ -12,6 +12,13 @@
 #ifndef pgm_read_byte
   #define pgm_read_byte(addr) (*(const uint8_t *)(addr))
 #endif
+#ifndef pgm_read_word
+  #define pgm_read_word(addr) (*(const uint16_t *)(addr))
+#endif
+#ifndef pgm_read_dword
+  #define pgm_read_dword(addr) (*(const uint32_t *)(addr))
+#endif
+
 #define GEO_LETTER_COUNT 33          // ა (U+10D0) .. ჰ (U+10F0)
 #define GEO_FIRST_CP     0x10D0UL
 #define GEO_MTAVRULI_CP  0x1C90UL    // Mtavruli capitals Ა..Ჰ map onto the same 33 glyphs
